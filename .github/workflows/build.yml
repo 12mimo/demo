@@ -29,13 +29,17 @@ jobs:
     - name: Install PyInstaller
       run: pip install pyinstaller  # 安装 PyInstaller
 
-    - name: Build macOS application for ARM and Intel architectures
+    - name: Build macOS application for ARM architecture
       run: |
-        pyinstaller --onedir --distpath ./dist/mac --workpath ./build/mac --name demo --windowed main.py  # 使用 onedir 模式
-        # 创建两个架构的包
-        pyinstaller --onedir --distpath ./dist/mac --workpath ./build/mac --name demo-x86_64 --arch x86_64 --windowed main.py
-        # 合并两个架构的二进制文件
-        lipo -create ./dist/mac/demo/./demo ./dist/mac/demo-x86_64/./demo -output ./dist/mac/demo.app/Contents/MacOS/demo
+        pyinstaller --onedir --distpath ./dist/mac/arm64 --workpath ./build/mac/arm64 --name demo --windowed main.py  # ARM 架构
+
+    - name: Build macOS application for x86_64 architecture
+      run: |
+        arch -x86_64 pyinstaller --onedir --distpath ./dist/mac/x86_64 --workpath ./build/mac/x86_64 --name demo --windowed main.py  # x86_64 架构
+
+    - name: Merge ARM and x86_64 binaries
+      run: |
+        lipo -create ./dist/mac/arm64/demo ./dist/mac/x86_64/demo -output ./dist/mac/demo.app/Contents/MacOS/demo  # 合并二进制文件
 
     - name: Upload macOS build artifact
       uses: actions/upload-artifact@v4  # 上传打包后的文件作为 GitHub 工件
