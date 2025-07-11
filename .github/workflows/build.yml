@@ -34,7 +34,7 @@ jobs:
         pyinstaller --onefile --distpath ./dist/mac --workpath ./build/mac --name demo --windowed main.py  # 使用 --windowed 选项隐藏控制台窗口
 
     - name: Upload macOS build artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3  # 更新到 v3 版本
       with:
         name: macOS-build
         path: ./dist/mac/demo  # 上传打包后的 macOS 可执行文件
@@ -64,7 +64,7 @@ jobs:
         pyinstaller --onefile --distpath ./dist/windows --workpath ./build/windows --name demo --noconsole main.py  # 使用 --noconsole 选项隐藏控制台窗口
 
     - name: Upload Windows build artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3  # 更新到 v3 版本
       with:
         name: Windows-build
         path: ./dist/windows/demo.exe  # 上传打包后的 Windows 可执行文件
