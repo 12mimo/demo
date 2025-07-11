@@ -31,9 +31,11 @@ jobs:
 
     - name: Build macOS application for ARM and Intel architectures
       run: |
-        pyinstaller --onefile --distpath ./dist/mac --workpath ./build/mac --name demo --windowed main.py  # 只打包 ARM64
-        # 使用 lipo 合并两个架构的二进制文件
-        lipo -create ./dist/mac/demo-arm64 ./dist/mac/demo-x86_64 -output ./dist/mac/demo.app  # 合并成一个多架构的 .app 文件
+        pyinstaller --onedir --distpath ./dist/mac --workpath ./build/mac --name demo --windowed main.py  # 使用 onedir 模式
+        # 创建两个架构的包
+        pyinstaller --onedir --distpath ./dist/mac --workpath ./build/mac --name demo-x86_64 --arch x86_64 --windowed main.py
+        # 合并两个架构的二进制文件
+        lipo -create ./dist/mac/demo/./demo ./dist/mac/demo-x86_64/./demo -output ./dist/mac/demo.app/Contents/MacOS/demo
 
     - name: Upload macOS build artifact
       uses: actions/upload-artifact@v4  # 上传打包后的文件作为 GitHub 工件
@@ -63,7 +65,7 @@ jobs:
 
     - name: Build Windows application
       run: |
-        pyinstaller --onefile --distpath ./dist/windows --workpath ./build/windows --name demo --windowed main.py  # 打包 Windows 可执行文件
+        pyinstaller --onedir --distpath ./dist/windows --workpath ./build/windows --name demo --windowed main.py  # 打包 Windows 可执行文件
 
     - name: Upload Windows build artifact
       uses: actions/upload-artifact@v4  # 上传 Windows 可执行文件
