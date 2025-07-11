@@ -31,21 +31,25 @@ jobs:
 
     - name: Build macOS application for ARM architecture
       run: |
-        pyinstaller --onedir --distpath ./dist/mac/arm64 --workpath ./build/mac/arm64 --name demo --windowed main.py  # ARM 架构
+        pyinstaller --onedir --distpath ./dist/mac/arm64 --workpath ./build/mac/arm64 --name demo-arm64 --windowed main.py  # ARM 架构
+        mv ./dist/mac/arm64/demo-arm64.app ./dist/mac/demo-arm64.app  # 移动生成的应用到指定位置
 
     - name: Build macOS application for x86_64 architecture
       run: |
-        arch -x86_64 pyinstaller --onedir --distpath ./dist/mac/x86_64 --workpath ./build/mac/x86_64 --name demo --windowed main.py  # x86_64 架构
+        arch -x86_64 pyinstaller --onedir --distpath ./dist/mac/x86_64 --workpath ./build/mac/x86_64 --name demo-x86_64 --windowed main.py  # x86_64 架构
+        mv ./dist/mac/x86_64/demo-x86_64.app ./dist/mac/demo-x86_64.app  # 移动生成的应用到指定位置
 
-    - name: Merge ARM and x86_64 binaries
-      run: |
-        lipo -create ./dist/mac/arm64/demo ./dist/mac/x86_64/demo -output ./dist/mac/demo.app/Contents/MacOS/demo  # 合并二进制文件
-
-    - name: Upload macOS build artifact
-      uses: actions/upload-artifact@v4  # 上传打包后的文件作为 GitHub 工件
+    - name: Upload ARM macOS build artifact
+      uses: actions/upload-artifact@v4  # 上传 ARM64 架构的 .app 文件
       with:
-        name: macOS-build
-        path: ./dist/mac/demo.app  # 上传 .app 文件
+        name: macOS-arm64-build
+        path: ./dist/mac/demo-arm64.app  # 上传 .app 文件
+
+    - name: Upload x86_64 macOS build artifact
+      uses: actions/upload-artifact@v4  # 上传 x86_64 架构的 .app 文件
+      with:
+        name: macOS-x86_64-build
+        path: ./dist/mac/demo-x86_64.app  # 上传 .app 文件
 
   build_windows:
     runs-on: windows-latest  # 选择 Windows 作为构建环境
