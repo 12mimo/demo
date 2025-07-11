@@ -1,0 +1,70 @@
+name: Build Python macOS & Windows App
+
+on:
+  push:
+    branches:
+      - main  # 触发操作的分支，可以根据需要修改为其他分支
+  pull_request:
+    branches:
+      - main  # 触发操作的分支
+
+jobs:
+  build_mac:
+    runs-on: macos-latest  # 使用 GitHub 提供的 macOS 构建环境
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # 拉取仓库代码
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.13'  # 设置 Python 版本，可以根据需求调整
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # 安装项目依赖
+
+    - name: Install PyInstaller
+      run: pip install pyinstaller  # 安装 PyInstaller
+
+    - name: Build the macOS application
+      run: |
+        pyinstaller --onefile --distpath ./dist/mac --workpath ./build/mac --name demo --windowed main.py  # 使用 --windowed 选项隐藏控制台窗口
+
+    - name: Upload macOS build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: macOS-build
+        path: ./dist/mac/demo  # 上传打包后的 macOS 可执行文件
+
+  build_windows:
+    runs-on: windows-latest  # 使用 GitHub 提供的 Windows 构建环境
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # 拉取仓库代码
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.13'  # 设置 Python 版本，可以根据需求调整
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # 安装项目依赖
+
+    - name: Install PyInstaller
+      run: pip install pyinstaller  # 安装 PyInstaller
+
+    - name: Build the Windows application
+      run: |
+        pyinstaller --onefile --distpath ./dist/windows --workpath ./build/windows --name demo --noconsole main.py  # 使用 --noconsole 选项隐藏控制台窗口
+
+    - name: Upload Windows build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Windows-build
+        path: ./dist/windows/demo.exe  # 上传打包后的 Windows 可执行文件
